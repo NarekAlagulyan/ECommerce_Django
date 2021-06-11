@@ -1,0 +1,371 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+{% load static %}
+{% load filtersandtags %}
+
+{% block metadata %}
+    <link rel="stylesheet" href="{% static 'css/product_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+    <style>
+
+
+        .restaurant-detailed-ratings-and-reviews hr {
+            margin: 0 -24px;
+        }
+
+        .graph-star-rating-header .star-rating {
+            font-size: 17px;
+        }
+
+        .progress {
+            background: #f2f4f8 none repeat scroll 0 0;
+            border-radius: 0;
+            height: 30px;
+        }
+
+        .rating-list {
+            display: inline-flex;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .rating-list-left {
+            height: 16px;
+            line-height: 29px;
+            width: 10%;
+        }
+
+        .rating-list-center {
+            width: 80%;
+        }
+
+        .rating-list-right {
+            line-height: 29px;
+            text-align: right;
+            width: 10%;
+        }
+
+        .restaurant-slider-pics {
+            bottom: 0;
+            font-size: 12px;
+            left: 0;
+            z-index: 999;
+            padding: 0 10px;
+        }
+
+        .restaurant-slider-view-all {
+            bottom: 15px;
+            right: 15px;
+            z-index: 999;
+        }
+
+        .offer-dedicated-nav .nav-link.active,
+        .offer-dedicated-nav .nav-link:hover,
+        .offer-dedicated-nav .nav-link:focus {
+            border-color: #3868fb;
+            color: #3868fb;
+        }
+
+        .offer-dedicated-nav .nav-link {
+            border-bottom: 2px solid #fff;
+            color: #000000;
+            padding: 16px 0;
+            font-weight: 600;
+        }
+
+        .offer-dedicated-nav .nav-item {
+            margin: 0 37px 0 0;
+        }
+
+        .restaurant-detailed-action-btn {
+            margin-top: 12px;
+        }
+
+        .restaurant-detailed-header-right .btn-success {
+            border-radius: 3px;
+            height: 45px;
+            margin: -18px 0 18px;
+            min-width: 130px;
+            padding: 7px;
+        }
+
+        .text-black {
+            color: #000000;
+        }
+
+        .icon-overlap {
+            bottom: -23px;
+            font-size: 74px;
+            opacity: 0.23;
+            position: absolute;
+            right: -32px;
+        }
+
+        .menu-list img {
+            width: 41px;
+            height: 41px;
+            object-fit: cover;
+        }
+
+        .restaurant-detailed-header-left img {
+            width: 88px;
+            height: 88px;
+            border-radius: 3px;
+            object-fit: cover;
+            box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+        }
+
+        .reviews-members .media .mr-3 {
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+        }
+
+        .rounded-pill {
+            border-radius: 50rem !important;
+        }
+
+        .total-like-user {
+            border: 2px solid #fff;
+            height: 34px;
+            box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+            width: 34px;
+        }
+
+        .total-like-user-main a {
+            display: inline-block;
+            margin: 0 -17px 0 0;
+        }
+
+        .total-like {
+            border: 1px solid;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: 500;
+            height: 34px;
+            line-height: 33px;
+            padding: 0 13px;
+            vertical-align: top;
+        }
+
+        .restaurant-detailed-ratings-and-reviews hr {
+            margin: 0 -24px;
+        }
+
+        .graph-star-rating-header .star-rating {
+            font-size: 17px;
+        }
+
+        .progress {
+            background: #f2f4f8 none repeat scroll 0 0;
+            border-radius: 0;
+            height: 30px;
+        }
+
+        .rating-list {
+            display: inline-flex;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .rating-list-left {
+            height: 16px;
+            line-height: 29px;
+            width: 10%;
+        }
+
+        .rating-list-center {
+            width: 80%;
+        }
+
+        .rating-list-right {
+            line-height: 29px;
+            text-align: right;
+            width: 10%;
+        }
+
+        .restaurant-slider-pics {
+            bottom: 0;
+            font-size: 12px;
+            left: 0;
+            z-index: 999;
+            padding: 0 10px;
+        }
+
+        .restaurant-slider-view-all {
+            bottom: 15px;
+            right: 15px;
+            z-index: 999;
+        }
+
+        .progress {
+            background: #f2f4f8 none repeat scroll 0 0;
+            border-radius: 0;
+            height: 30px;
+        }
+
+
+    </style>
+
+    <div class="content" style="padding-top: 100px;">
+        <div class="row wow fadeIn">
+            <!--Grid column-->
+            <div class="col-md-6 mb-4">
+                <img src="{{ product.get_image_url }}" class="img-fluid rounded"
+                     alt="">
+            </div>
+            <!--Grid column-->
+
+            <!--Grid column-->
+            <div class="col-md-6 mb-4">
+
+                <!--Content-->
+                <div class="p-4">
+                    <div class="mb-3">
+                        <a href="{{ product.category.get_absolute_url }}">
+                            <span class="badge purple mr-1">{{ product.category.name }}</span>
+                        </a>
+                        {% if is_new %}
+                            <a href="">
+                                <span class="badge blue mr-1">New</span>
+                            </a>
+                        {% endif %}
+
+                        <a href="">
+                            <span class="badge red mr-1">Bestseller</span>
+                        </a>
+                    </div>
+                    {% if request.user.is_authenticated %}
+                        <form action="{% url 'shop:product_star_toggle' %}" method="post"
+                              id="product_star_form_{{ product.pk }}" class="star_form">
+                            {% csrf_token %}
+                            <div class="stars-container">
+                                {% product_star_pattern user=request.user product_pk=product.pk %}
+                            </div>
+                        </form>
+                    {% endif %}
+                    <p class="lead">
+                        <strong class="font-weight-bold">
+                            {{ product.name }}
+                        </strong>
+                    </p>
+
+                    <p class="lead">
+                        <strong>{{ product.get_usd_price }}</strong>
+                    </p>
+
+                    <div class="border rounded p-3 mb-3 ">
+                        <h3 class="lead font-weight-bold">Description</h3>
+                        <p>
+                            {{ product.description }}
+                        </p>
+                    </div>
+
+                    {% if request.user.is_authenticated %}
+                        <form method="post" action="{% url 'shop:cart_add_remove' %}" id="{{ product.pk }}"
+                              class="cart_add_remove_form d-flex justify-content-left">
+                            {% csrf_token %}
+                            <button type="submit" id="cart_btn{{ product.pk }}"
+                                    class="my-0 p waves-effect waves-light btn btn-md btn-{% if cart_product in cart.products.all %}danger"
+                                        >Remove from cart{% else %}primary">Add to cart{% endif %}
+                                    <i class="fas fa-shopping-cart ml-1"></i>
+                            </button>
+                        </form>
+                        <a href="{% url 'shop:order_process' category=product.category.slug pk=product.pk %}" class="btn btn-warning">
+                            Buy Now
+                        </a>
+                    {% else %}
+                        {% with request.path as next_login_url %}
+                            <a href="{% url 'account_login' %}?next={{ next_login_url }}"
+                               class="my-0 p waves-effect waves-light btn btn-md btn-primary">
+                                Add to cart <i class="fas fa-shopping-cart ml-1"></i>
+                            </a>
+                            <a href="{% url 'account_login' %}?next={{ next_login_url }}"
+                               class="my-0 p waves-effect waves-light btn btn-md btn-warning">
+                                Buy now
+                            </a>
+                        {% endwith %}
+
+                    {% endif %}
+                </div>
+                <!--Content-->
+            </div>
+            <!--Grid column-->
+        </div>
+        <div class="extra-images mt-5 mx-auto text-center">
+            <h1 class="text-default p-2 border border-default border-left-0 border-right-0">
+                Extra illustrations
+            </h1>
+            <div class="row mt-3">
+                {% for ex_img in product.extraimage_set.all %}
+                    <div class="col-md-4 mb-5">
+
+                        <a href="{{ ex_img.get_image_url }}" target="_blank">
+                            <img class="img-fluid rounded"
+                                 src="{{ ex_img.get_image_url }}"
+                                 style="width: 100%; height: 200px; object-fit: cover;"
+                                 alt="Sample">
+                        </a>
+
+
+                    </div>
+                {% empty %}
+                    <h2 class="text-info bg-dark p-2 mx-auto">
+                        No extra images to show
+                    </h2>
+                {% endfor %}
+
+            </div>
+        </div>
+        <div class="reviews mx-auto text-center bg-default p-4">
+            {% if request.user.is_authenticated %}
+                <div class="row d-flex align-items-center">
+                    <img src="{{ request.user.image.url }}" alt="" class="img-fluid rounded-circle mx-3"
+                         style="width: 60px; height: 60px; object-fit: cover;"
+                    >
+                    <span class="h3 text-white">{{ request.user.username }}</span>
+                </div>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="text-left text-white font-weight-bold mt-4">
+                        {% bootstrap_form review_form %}
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit"> Submit review</button>
+                    </div>
+                </form>
+            {% endif %}
+            {% if reviews %}
+                <div class="bg-white rounded shadow-sm p-4 mb-4 restaurant-detailed-ratings-and-reviews">
+                    {% for review in reviews %}
+                        <div class="reviews-members pt-4 pb-4">
+                            <div class="media">
+                                <div class="media-body">
+                                    <div class="row d-flex align-items-center mb-4">
+                                        <img src="{{ review.author.image.url }}" alt=""
+                                             class="img-fluid rounded-circle mr-3"
+                                             style="width: 50px; height: 50px; object-fit: cover;"
+                                        >
+                                        <span class="h3 text-success">{{ review.author.username }}</span>
+                                    </div>
+                                    <div class="reviews-members-body float-left">
+                                        <p>
+                                            {{ review.content }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}

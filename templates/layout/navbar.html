@@ -1,0 +1,92 @@
+{% load bootstrap4 %}
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar">
+
+    <div class="container">
+
+        <!-- Collapse -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Links -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <!-- Left -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'shop:home' %}">
+                        <h5 class="text-danger font-italic font-weight-bold">
+                            Online Shop
+                        </h5>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle font-weight-bold text-info" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu bg-dark wow animated fadeIn" aria-labelledby="navbarDropdown">
+                        {% for category in categories %}
+                            <a class="dropdown-item font-weight-bold text-info" href="{% url 'shop:category_products_list' category=category.slug %}">{{ category.name }}</a>
+                        {% endfor %}
+                        <a href="{% url 'shop:category_products_list' category='all-products' %}" class="dropdown-item font-weight-bold text-info">All products</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="mx-5">
+                <form method="post" action="{% url 'shop:search_redirect' %}" class="form-inline my-2 my-lg-0">
+                    {% csrf_token %}
+                    {% bootstrap_form search_form %}
+                    <button class="btn btn-info rounded font-weight-bold my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+
+            <!-- Right -->
+            <ul class="navbar-nav nav-flex-icons d-flex align-items-center">
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item mr-4">
+                        <a href="{% url 'shop:customer_profile' %}"
+                           class="nav-link"
+                        >
+                            <img src="{{ request.user.image.url }}" class="rounded" width="50px">
+                            <span class="h5 font-weight-bold text-light">
+                                {{ request.user.username }}
+                            </span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item mr-5">
+                        <a href="{% url 'shop:customer_cart' %}" class="text-warning font-weight-bold">
+                            <i class="fas fa-shopping-cart  mr-1"></i>
+                            <span id="cart_icon">{{ cart_products_count }}</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{% url 'account_logout' %}"
+                           class="nav-link btn btn-secondary rounded font-weight-bold">
+                            Logout
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item mr-2">
+                        <a href="{% url 'account_login' %}"
+                           class="btn btn-primary"
+                        >
+                            Login
+                        </a>
+                    <li class="nav-item">
+                    <a href="{% url 'account_signup' %}"
+                       class="btn btn-danger"
+                    >
+                        Signup
+                    </a>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+    {% bootstrap_messages %}
+</nav>

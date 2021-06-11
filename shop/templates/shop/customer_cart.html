@@ -1,0 +1,102 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+{% load filtersandtags %}
+
+
+{% block content %}
+    <div class="row" style="margin-top: 180px;">
+        <div class="col-sm-12 col-md-10 col-md-offset-1">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th class="text-center">Price</th>
+                    <th class="text-center">Total</th>
+                    <th> </th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for product in cart.products.all %}
+                    <tr>
+                        <td class="col-sm-8 col-md-6">
+                            <div class="media">
+                                <a class="" href="{% url 'shop:product_detail' category=product.product.category.slug pk=product.product.pk %}">
+                                    <img class="media-object mr-2"
+                                         src="{{ product.product.image.url }}"
+                                         style="width:150px; height:150px; object-fit: cover;">
+                                </a>
+                                <div class="media-body">
+                                    <h3 class="media-heading"><a href="{% url 'shop:product_detail' category=product.product.category.slug pk=product.product.pk %}">{{ product.product.name }}</a></h3>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-sm-1 col-md-1" style="text-align: center;">
+
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ product.pk }}" name="cart_product_pk">
+                                {% bootstrap_form product|cart_product_quantity_form %}
+                                <button class="btn btn-primary btn-sm" type="submit">Submit quantity</button>
+                            </form>
+                        </td>
+                        <td class="col-sm-1 col-md-1 text-center h5"><strong>{{ product.product.price }}$</strong></td>
+                        <td class="col-sm-1 col-md-1 text-center h5"><strong>{{ product.get_total_price }}$</strong></td>
+                        <td class="col-sm-1 col-md-1 f-flex justify-content-between align-middle">
+                            <form method="post" action="{% url 'shop:cart_product_remove' %}">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ product.pk }}" name="cart_product_pk">
+                                <button class="btn btn-danger"
+                                        type="submit"
+                                        style="width: 100%;"
+                                >
+                                    Remove
+                                </button>
+                            </form>
+                            <a href="{% url 'shop:order_process' category=product.product.category.slug pk=product.product.pk %}"
+                               class="order_cart_product btn btn-default"
+                               data-cart_product_quantity="{{ product.quantity }}">
+                                Buy
+                            </a>
+                        </td>
+                    </tr>
+
+                {% empty %}
+                    <h1>Cart was empty</h1>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><h3>Total</h3></td>
+                    <td class="text-right"><h3><strong>{{ cart.total_price }}$</strong></h3></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <a href="{% url 'shop:order_all_cart_product' %}" class="btn btn-default btn-lg">
+                            Buy all
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}
+
+
+{% block script %}
+    <script>
+
+
+    $('.order_cart_product').on('click', function() {
+        sessionStorage.cart_product_quantity = $(this).attr('data-cart_product_quantity');
+        alert(sessionStorage.getItem('cart_product_quantity'))
+    })
+    </script>
+{% endblock %}

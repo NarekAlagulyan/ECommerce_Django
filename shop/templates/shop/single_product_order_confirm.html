@@ -1,0 +1,70 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+    Confirm your order
+{% endblock %}
+
+{% block content %}
+    <div class="row" style="margin-top: 120px;">
+        <div class="col-8 mx-auto rounded border shadow-lg p-3">
+            <h1 class="text-info">Confirm and click "Buy" button to buy product</h1>
+            <div class="d-flex bg-warning rounded">
+                <img src="{{ product.get_image_url }}" alt="Ordering product image"
+                style="width: 200px; object-fit: cover;"
+                >
+               <div class="product-info p-3">
+                   <div class="product-title">
+                       <h2 class="text-dark font-weight-bold">{{ product.name }}</h2>
+                   </div>
+                   <div class="product-body">
+                       <p class="font-weight-bold h5 bg-dark p-2">
+                           <span class="text-light">Product price: </span><span class="text-success">{{ product.get_usd_price }}</span>
+                       </p>
+                       <p class="font-weight-bold h5 bg-dark p-2">
+                           <span class="text-light">Total price:</span>
+                           <span id="total_price" class="text-success"></span>
+                       </p>
+                   </div>
+               </div>
+            </div>
+            {% bootstrap_form_errors form %}
+            <form method="post" action="">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="" style="width: 35%;">
+                    <button class='captcha-refresh btn btn-light btn-sm rounded text-success'>Refresh captcha</button>
+                    <button class="btn btn-primary btn-md rounded text-light font-weight-bold" type="submit">
+                        Confirm order and buy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        $(function() {
+            const QUANTITY = sessionStorage.getItem('cart_product_quantity');
+            console.log(QUANTITY)
+            if (QUANTITY) {
+                $('#id_quantity').val(QUANTITY);
+            }
+            let quantity = $('#id_quantity').attr('value');
+            let price = {{ product.price }};
+            let total = quantity * price;
+            console.log(price)
+            console.log(quantity)
+            $('#total_price').html('$' + total);
+        })
+
+        $("#id_quantity").on("input", function () {
+            let quantity = $(this).val();
+            let price = {{ product.price }};
+            let total = quantity * price;
+            $('#total_price').html('$' + total);
+        });
+    </script>
+{% endblock %}

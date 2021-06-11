@@ -1,0 +1,119 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block metadata %}
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+{% endblock %}
+
+
+{% block title %}
+    {{ request.user.username }} profile
+{% endblock %}
+
+{% block content %}
+    <style>
+
+        .setting-button {
+            transition: 1.4s;
+        }
+
+        .setting-button:hover {
+            transform: rotate(360deg);
+        }
+
+        .settings-dropdown-menu {
+            display: none;
+        }
+
+    </style>
+    <div class="row p-5 my-5">
+        <div class="col-12 col-md-11 mx-auto">
+            <!-- Profile widget -->
+            <div class="bg-white shadow rounded overflow-hidden">
+                <div class="px-4 pt-0 pb-4 cover">
+                    <div class="media align-items-end profile-head">
+                        <div class="profile mr-3">
+                            <a href="{{ request.user.image.url }}" target="_blank">
+                                <img src="{{ request.user.image.url }}" width="330px"
+                                     class="rounded mb-2 img-thumbnail">
+                            </a>
+
+                            <div class="settings-dropdown">
+                                <i class="fas fa-cog h3 text-info setting-button" id="profileSettingDropdownButton"></i>
+                                <div id="settings-dropdown-menu" class="bg-dark rounded">
+                                    <a class="dropdown-item text-info" href="{% url 'socialaccount_connections' %}">Add 3rd party account</a>
+                                    <a class="dropdown-item text-info" href="{% url 'account_email' %}">Email</a>
+                                    <a class="dropdown-item text-info" href="{% url 'account_change_password' %}">Change password</a>
+                                    <a class="dropdown-item text-info" href="{% url 'account_reset_password' %}">Password reset</a>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="media-body mb-5 text-white">
+                            <h3 class="mt-0 mb-0 font-weight-bold text-info">{{ user.username }}</h3>
+                            {% if user.first_name and user.last_name %}
+                                <p class="small mb-4">
+                                    {{ user.first_name }} {{ user.last_name }}
+                                </p>
+                                <p class="small mb-4"><i class="fas fa-map-marker-alt mr-2"></i>
+                                    <span class="mr-2">Country: {{ user.country }}</span>
+                                    <span class="mr-2">City: {{ user.city }}</span>
+                                    <span class="mr-2">Address: {{ user.address }}</span>
+                                    <span class="mr-2">Zip Code: {{ user.zip_code }}</span>
+                                </p>
+                            {% else %}
+                                <p class="small mb-4">
+
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-light p-4 d-flex justify-content-end text-center">
+
+                    <ul class="list-inline mb-0 d-flex align-items-center">
+                        <li class="list-inline-item">
+                            <h5 class="font-weight-bold mb-0 d-block">0</h5>
+                            <small class="text-muted">
+                                <i class="fas fa-image mr-1"></i>jj
+                            </small>
+                        </li>
+                        {#                        <li class="list-inline-item">#}
+                        {#                            <h5 class="font-weight-bold mb-0 d-block">745</h5><small class="text-muted"> <i#}
+                        {#                                clas    s="fas fa-user mr-1"></i>Followers</small>#}
+                        {#                        </li>#}
+                        {#                        <li class="list-inline-item">#}
+                        {#                            <h5 class="font-weight-bold mb-0 d-block">340</h5><small class="text-muted"> <i#}
+                        {#                                class="fas fa-user mr-1"></i>Following</small>#}
+                        {#                        </li>#}
+                    </ul>
+                </div>
+                <div class="px-4 py-3">
+                    <h5 class="mb-0">About</h5>
+                    <div class="p-4 rounded shadow-sm bg-light">
+                        hhhfgh gfhgf h f
+                    </div>
+                </div>
+                <div class="py-4 px-4">
+                    <div class="d-flex align-items-center justify-content-end mb-3">
+                        <a href="{% url 'shop:customer_cart' %}" class="btn btn-primary font-weight-bold">Products in the cart<span
+                                class="ml-2 p-1 rounded bg-danger">{{ cart_products_count }}</span></a>
+                        <a href="{% url 'shop:customer_order_list' %}" class="btn btn-primary font-weight-bold">Orders<span
+                                class="ml-2 p-1 rounded bg-warning">{{ request.user.order_set.count }}</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+    $('#settings-dropdown').mouseenter(function() {
+        $('#settings-dropdown-menu').show();
+    })
+    $('#settings-dropdown').mouseleave(function() {
+        $('#settings-dropdown-menu').hide();
+    })
+    </script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+{% load static %}
+
+{% block content %}
+    <div class="" style="margin-top:180px;">
+        <form action="" method="post">
+            {% csrf_token %}
+
+                {% bootstrap_formset formset %}
+
+            <input class="btn btn-primary" type="submit">
+        </form>
+    </div>
+{% endblock %}

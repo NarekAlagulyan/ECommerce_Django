@@ -1,0 +1,140 @@
+{% load bootstrap4 %}
+{% load static  %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block metadata %}
+    
+    {% endblock %}
+</head>
+<body>
+{% include 'layout/navbar.html' %}
+
+{% block carousel %}
+
+{% endblock %}
+
+<div class="container">
+
+    {% block content %}
+    
+    {% endblock %}
+</div>
+
+
+
+<script>
+    $('#profileSettingDropdownButton').on('click', function () {
+        $('.settings-dropdown-menu').toggle({display: 'block'}, {display: 'none'})
+
+    })
+
+
+    const CART_ICON = `<i class="fas fa-shopping-cart ml-1"></i>`
+
+    $('.cart_add_remove_form').submit(function(event) {
+        event.preventDefault();
+        const PRODUCT_ID = $(this).attr('id')
+
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'product_id': PRODUCT_ID,
+            },
+
+            success: function (data) {
+                let [count, in_cart] = [data['cart_products_count'], data['product_in_cart']];
+                console.log(count);
+                console.log(in_cart);
+                let cart_button = $(`#cart_btn${PRODUCT_ID}`);
+
+                $('#cart_icon').html(count);
+
+                if (in_cart) {
+                    $(cart_button).removeClass('btn-primary').addClass('btn-danger').html(`Remove from cart ${CART_ICON}`);
+                } else {
+                    $(cart_button).removeClass('btn-danger').addClass('btn-primary').html(`Add to cart ${CART_ICON}`);
+                }
+            },
+
+            error: function(response) {
+                console.log('cannot handle this request');
+            },
+        })
+    })
+
+
+
+    $('.star_form').submit(function(event) {
+        event.preventDefault();
+
+        const PRODUCT_ID = $(this).attr('id').replace(/\D/g, "");
+        const CLICKED_STAR = $(this).find("button[type=submit]:focus").attr('data-star')
+        console.log(this);
+        console.log(PRODUCT_ID);
+        console.log(CLICKED_STAR)
+
+        $.ajax({
+            type: $(this).attr('method'),
+            url: $(this).attr('action'),
+
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'product_id': PRODUCT_ID,
+                'star': CLICKED_STAR,
+            },
+            success: function (data) {
+                let [star, rated] = [data['star'], data['rated']];
+                console.log('json stars: ', star);
+                console.log('json rated: ', rated);
+                $('.stars-container').empty();
+
+                if (rated) {
+                    for (let i = 1; i <= star; i++) {
+                        $('.stars-container').append(`<button class="star-btn border-0 p-0 m-0 bg-white" type="submit"data-star="${i}"><i class="fa fa-star text-warning"></i></button>`)
+                    }
+                    for (let i = star + 1; i <= 5; i++) {
+                        $('.stars-container').append(`<button class="star-btn border-0 p-0 m-0 bg-white" type="submit"data-star="${i}"><i class="fa fa-star text-black"></i></button>`)
+                    }
+                } else {
+                    for (let i = 1; i <= 5; i++) {
+                        $('.stars-container').append(`<button class="star-btn border-0 p-0 m-0 bg-white" type="submit"data-star="${i}"><i class="fa fa-star text-black"></i></button>`)
+                    }
+                }
+            }
+        })
+    })
+
+    $('.captcha-refresh').click(function () {
+        $.getJSON("/captcha/refresh/", function (result) {
+            $('.captcha').attr('src', result['image_url']);
+            $('#id_captcha_0').val(result['key'])
+        });
+    });
+    
+
+</script>
+
+{% block script %}
+
+{% endblock %}
+
+</body>
+</html>

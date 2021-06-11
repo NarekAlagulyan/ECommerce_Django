@@ -1,0 +1,25 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+    Order process
+{% endblock %}
+
+{% block content %}
+    <div class="row" style="margin-top: 120px;">
+        <div class="col-8 mx-auto rounded border shadow-lg p-3">
+            <h1 class="text-info">Complete delivery address</h1>
+            {% bootstrap_form_errors form %}
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <div class="" style="width: 35%;">
+                    <button class='captcha-refresh btn btn-light btn-sm rounded text-success'>Refresh captcha</button>
+                    <button class="btn btn-primary btn-md rounded text-light font-weight-bold" type="submit">
+                        Confirm delivery address
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

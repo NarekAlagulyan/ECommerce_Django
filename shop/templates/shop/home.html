@@ -1,0 +1,181 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+{% load static %}
+
+
+{% block metadata %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block carousel %}
+    <div id="carousel-example-1" class="carousel slide carousel-fade" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carousel-example-1z" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel-example-1z" data-slide-to="1"></li>
+            <li data-target="#carousel-example-1z" data-slide-to="2"></li>
+        </ol>
+
+        {% include 'layout/carousel.html' %}
+    </div>
+{% endblock carousel %}
+
+<main>
+    {% block content %}
+        {% if request.user.is_authenticated %}
+            <section>
+                <h3 class="h3 text-center mb-5">
+                    <strong class="font-weight-bold text-info">Last visited</strong>
+                </h3>
+                <div class="row wow fadeIn">
+                    {% for product in last_visited_products %}
+                        <div class="col-md-3 mb-2">
+                            <div>
+                                <div class="view zoom overlay z-depth-2" style="">
+                                    <img class="img-fluid"
+                                         src="{{ product.product.get_image_url }}"
+                                         alt="Sample"
+                                         style="width:100%; height:240px; object-fit: cover;"
+
+                                    >
+                                    <a href="{{ product.product.get_absolute_url }}">
+                                        <div class="mask">
+                                            <img class="img-fluid w-100"
+                                                 src="{{ product.product.get_image_url }}"
+                                                 style="width:100%; height:100%; object-fit: cover;"
+                                            >
+                                            <div class="mask rgba-black-slight"></div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+
+        {% if new_products %}
+            <hr class="my-5 bg-primary">
+            <section class="mt-5 wow fadeIn">
+                <div class="row d-flex justify-content-start">
+                    <div class="col-md-6 mb-4">
+                        <h1 class="mb-3 text-danger font-weight-bold">New products</h1>
+                        <p>New added products list.
+                        <hr class="my-5">
+                        <p></p>
+                        <a href="{% url 'shop:category_products_list' category='new-products' %}"
+                           class="btn btn-danger btn-lg font-weight-bold">
+                            Show full list
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <img src="{% static 'images/product-status/new-product.png' %}"
+                             class="img-fluid z-depth-1-half" alt=""
+                             style="width: 120px; height: 120px; object-fit: cover;"
+                        >
+                    </div>
+                </div>
+
+                <div class="row">
+                    {% for product in new_products %}
+                        <div class="col-md-3 mb-3">
+                            <div>
+                                <div class="view zoom overlay rounded z-depth-2">
+                                    <img class="img-fluid"
+                                         src="{{ product.get_image_url }}"
+                                         alt="Sample"
+                                         style="width:100%; height:200px; object-fit: cover;"
+                                    >
+                                    <a href="{{ product.get_absolute_url }}">
+                                        <div class="mask">
+                                            <img class="img-fluid w-100"
+                                                 src="{{ product.get_image_url }}"
+                                                 style="width:100%; height:100%; object-fit: cover;"
+                                            >
+                                            <div class="mask rgba-black-slight"></div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="text-center pt-4">
+                                    <h5>{{ product.name }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+        <hr class="my-5 bg-primary">
+
+        <section class="mt-5 wow fadeIn">
+            <div class="row d-flex justify-content-start">
+                <div class="col-md-6 mb-4">
+                    <h1 class="mb-3 text-info font-weight-bold">All products</h1>
+                    <p>List of all products</p>
+                    <hr class="my-5">
+
+                    <a href="{% url 'shop:category_products_list' category='all-products' %}"
+                       class="btn btn-info btn-lg font-weight-bold">
+                        Show full list
+                    </a>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <img src="{% static 'images/product-status/all-products.png' %}"
+                         class="img-fluid z-depth-1-half" alt=""
+                         style="width: 120px; height: 120px; object-fit: cover;"
+                    >
+                </div>
+            </div>
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-3 mb-4">
+                        <div>
+                            <div class="view zoom overlay rounded z-depth-2" style="">
+                                <img class="img-fluid"
+                                     style="width:100%; height:200px; object-fit: cover;"
+                                     src="{{ product.get_image_url }}"
+
+                                     alt="Sample">
+                                <a href="{{ product.get_absolute_url }}">
+                                    <div class="mask">
+                                        <img class="img-fluid"
+                                             style="width:100%; height:100%; object-fit: cover;"
+                                             src="{{ product.get_image_url }}">
+                                        <div class="mask rgba-black-slight"></div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="text-center pt-4">
+                                <h5>{{ product.name }}</h5>
+                                <p>
+                                    <span class="mr-1">
+                                        <strong>{{ product.get_usd_price }}</strong>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <hr class="my-5 bg-primary">
+
+    {% endblock content %}
+
+    {% block script %}
+        <script>
+            $(document).ready(function () {
+
+                $('#myCarousel').carousel({
+                    interval: 3000,
+                })
+
+            });
+        </script>
+    {% endblock %}
+</main>

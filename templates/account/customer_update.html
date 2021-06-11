@@ -1,0 +1,15 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+    <div class="row">
+    <div class="col-8 mx-auto">
+        <form method="post" action="" style="margin-top: 110px;">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary">Update profile information</button>
+        </form>
+    </div>
+    </div>
+{% endblock %}

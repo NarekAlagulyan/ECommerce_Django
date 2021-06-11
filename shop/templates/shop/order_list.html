@@ -1,0 +1,26 @@
+{% extends 'layout/base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-10 mx-auto" style="margin-top: 130px;">
+            {% for order in orders %}
+                <div class="mb-5 bg-warning p-5">
+                    <div class="">
+                        <span class="text-white font-weight-bold">Delivery address:</span>
+                        <span>{{ order.country }} {{ order.city }} {{ order.address }} {{ order.zip_code }}</span>
+                    </div>
+                    <div class="">
+                        <span class="text-white font-weight-bold">Order transaction ID: </span>
+                        <span class="">{{ order.transaction_id }}</span>
+                    </div>
+                <div class="date">
+                    <span class="text-white font-weight-bold">Date ordered: </span>
+                    <span class="">{{ order.date_ordered }}</span>
+                </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+{% endblock %}
