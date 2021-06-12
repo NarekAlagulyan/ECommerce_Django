@@ -6,9 +6,12 @@ from django.dispatch import receiver
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator, ValidationError
+from django.template.defaultfilters import slugify
+from django.utils.safestring import mark_safe
 
 from datetime import timedelta
 from uuid import uuid4
+import re
 
 from django_countries.fields import CountryField
 
@@ -17,6 +20,49 @@ from django_countries.fields import CountryField
 CUSTOMER_IMAGE_STORAGE = 'customer-images'
 CATEGORY_IMAGE_STORAGE = 'category-images'
 PRODUCT_IMAGE_STORAGE = 'product-images'
+
+
+def unique_slugify(instance, value, slug_field_name='slug', queryset=None,
+                   slug_separator='-'):
+    slug_field = instance._meta.get_field(slug_field_name)
+    slug_len = slug_field.max_length
+    slug = slugify(value)
+
+    if slug_len:
+        slug = slug[:slug_len]
+    slug = _slug_strip(slug, slug_separator)
+    original_slug = slug
+
+    if queryset is None:
+        queryset = instance.__class__._default_manager.all()
+    if instance.pk:
+        queryset = queryset.exclude(pk=instance.pk)
+
+    next_ = 2
+    while not slug or queryset.filter(**{slug_field_name: slug}):
+        slug = original_slug
+        end = '%s%s' % (slug_separator, next_)
+        if slug_len and len(slug) + len(end) > slug_len:
+            slug = slug[:slug_len - len(end)]
+            slug = _slug_strip(slug, slug_separator)
+        slug = '%s%s' % (slug, end)
+        next_ += 1
+    setattr(instance, slug_field.attname, slug)
+
+
+def _slug_strip(value, separator='-'):
+    separator = separator or ''
+    if separator == '-' or not separator:
+        re_sep = '-'
+    else:
+        re_sep = '(?:-|%s)' % re.escape(separator)
+    if separator != re_sep:
+        value = re.sub('%s+' % re_sep, separator, value)
+    if separator:
+        if separator != '-':
+            re_sep = re.escape(separator)
+        value = re.sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
+    return value
 
 
 class Customer(AbstractUser):
@@ -45,11 +91,16 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-    def set_slug(self):
-        self.slug = self.name
+    def save(self, *args, **kwargs):
+        unique_slugify(self, self.name)
+        return super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('shop:category_products_list', kwargs={'category': self.slug})
+
+    @property
+    def get_image_url(self):
+        return self.image.url
 
 
 class Product(models.Model):
@@ -63,7 +114,12 @@ class Product(models.Model):
     description = models.TextField(verbose_name='About this product')
     image = models.ImageField(upload_to=PRODUCT_IMAGE_STORAGE)
     price = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Price')
+    slug = models.SlugField(unique=True)
     add_date = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    def save(self, *args, **kwargs):
+        unique_slugify(self, self.name)
+        super().save(*args, **kwargs)
 
     def clean(self):
         super().clean()
@@ -83,6 +139,7 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.name} || {self.price}$'
 
+    @property
     def get_absolute_url(self):
         return reverse('shop:product_detail', kwargs={'category': self.category.slug, 'pk': self.pk})
 
@@ -171,6 +228,14 @@ class CartProduct(models.Model):
     def get_total_price(self):
         return self.quantity * self.product.price
 
+    @property
+    def get_absolute_url(self):
+        return self.product.get_absolute_url
+
+    @property
+    def get_name(self):
+        return self.product.name
+
 
 class RateOfProduct(models.Model):
     PRODUCT_RATING = (
@@ -196,6 +261,10 @@ class Review(models.Model):
 
     def __str__(self):
         return f'Review to "{self.product.name}" by "{self.author.username}"'
+
+    @property
+    def get_product_absolute_url(self):
+        return self.product.get_absolute_url
 
 
 class Order(models.Model):
