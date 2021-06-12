@@ -9,19 +9,8 @@
             </ol><!-- /.carousel-indicators -->
 
             <div class="carousel-inner">
-
-            <div class="carousel-item active">
-                {% with categories.first as f_cat %}
-                    <img class="d-block img-fluid" src="{{ f_cat.image.url }}" alt="">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h1>{{ f_cat.name }}</h1>
-                        <a class="btn btn-danger" href="{% url 'shop:category_products_list' category=f_cat.slug %}">See all {{ f_cat.name }} list</a>
-                    </div>
-                {% endwith %}
-            </div>
-
-                {% for category in categories|slice:"1:" %}
-                    <div class="carousel-item">
+                {% for category in categories %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
                         <img class="d-block img-fluid" src="{{ category.image.url }}" alt="">
                         <div class="carousel-caption d-none d-md-block">
                             <h1>{{ category.name }}</h1>
