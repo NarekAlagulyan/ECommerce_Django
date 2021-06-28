@@ -6,7 +6,6 @@ from .views import (
     category_product_list_view,
     customer_cart_view,
     search_product_list,
-    search_redirect,
     product_star_toggle_view,
     customer_cart_product_remove,
     order_create_view,
@@ -24,11 +23,6 @@ cart_urlpatterns = [
     path('my/order-all/', multiple_product_order_create_view, name='order_all_cart_product'),
 ]
 
-search_urlpatterns = [
-    path('redirect/', search_redirect, name='search_redirect'),
-    path('<str:query>/', search_product_list, name='search_product'),
-]
-
 category_urlpatterns = [
     path('<int:pk>/order-process/', order_create_view, name='order_process'),
     path('<int:pk>/', product_detail_view, name='product_detail'),
@@ -42,7 +36,7 @@ urlpatterns = [
     path('account/<int:pk>/update/', customer_profile_update_view, name='customer_update'),
 
     path('cart/', include(cart_urlpatterns)),
-    path('search-product/', include(search_urlpatterns)),
+    path('search/', search_product_list, name='search_product'),
     path('rate-product-star/', product_star_toggle_view, name='product_star_toggle'),
     path('category-<slug:category>/', include(category_urlpatterns)),
     path('product-<int:pk>/order-<uuid>/confirm/', create_order_product, name='order_product_confirm'),

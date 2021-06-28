@@ -200,12 +200,6 @@ def customer_cart_product_remove(request):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@require_POST
-def search_redirect(request):
-    query = request.POST['query']
-    return redirect('shop:search_product', query=query)
-
-
 class SearchProductListView(ListView):
     model = Product
     context_object_name = 'products'
@@ -213,9 +207,8 @@ class SearchProductListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        query = self.kwargs['query']
+        query = self.request.GET.get('query')
         q = Q(name__icontains=query) | Q(category__name__icontains=query)
-        print(queryset.filter(q))
         return queryset.filter(q)
 
 

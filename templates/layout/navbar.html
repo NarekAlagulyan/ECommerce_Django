@@ -36,8 +36,7 @@
                 </li>
             </ul>
             <div class="mx-5">
-                <form method="post" action="{% url 'shop:search_redirect' %}" class="form-inline my-2 my-lg-0">
-                    {% csrf_token %}
+                <form method="GET" action="{% url 'shop:search_product' %}" class="form-inline my-2 my-lg-0">
                     {% bootstrap_form search_form %}
                     <button class="btn btn-info rounded font-weight-bold my-2 my-sm-0" type="submit">Search</button>
                 </form>

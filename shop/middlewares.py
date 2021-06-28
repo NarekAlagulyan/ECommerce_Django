@@ -39,5 +39,3 @@ class LastProductVisitedMiddleware:
                 # By saving, modifies add_date because 'auto_now=True' in DateTimeField
                 if current_product_visited != customer.lastproductvisited_set.first():
                     current_product_visited.save()
-
-
